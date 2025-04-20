@@ -1,1 +1,3 @@
-These are my configuration files for Kitty and zsh.
+# Dotfiles
+
+My configuration files for Kitty and zsh :)

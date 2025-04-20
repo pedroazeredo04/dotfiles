@@ -265,45 +265,6 @@ function open_remote() {
     fi
 }
 
-# Função para gerar link do Seafile
-function seafile_link() {
-    base_url="https://drive.thunderatz.org/lib/347d7784-96f3-4b88-ada2-34acec0262f2/file/"
-    file_path="$1"
-    file_path=$(echo "$file_path" | sed 's/ /%20/g')
-    echo "$base_url$file_path"
-}
-
-# Função para selecionar arquivo usando fzf e gerar link do Seafile
-function seafile_fzf() {
-    open_in_browser=false
-
-    for arg in "$@"; do
-        case $arg in
-            -o|--open)
-                open_in_browser=true
-                ;;
-            *)
-                echo "Opção desconhecida: $arg"
-                return 1
-                ;;
-        esac
-    done
-
-    selected_path=$(fzf)
-
-    if [ -n "$selected_path" ]; then
-        quoted_path=$(echo "$selected_path" | tr -d "'")
-        seafile_link=$(seafile_link "$quoted_path")
-        echo "$seafile_link"
-
-        if [ "$open_in_browser" = true ]; then
-            open "$seafile_link"
-        fi
-    else
-        echo "Nenhum arquivo selecionado."
-    fi
-}
-
 # Função para lançar comandos em background
 function launch() {
     nohup "$@" &>/dev/null & disown
@@ -492,12 +453,8 @@ if [[ "$ZPROF" = true ]]; then
   zprof
 fi
 
-# fnm
-FNM_PATH="/home/eduardo-barreto/.local/share/fnm"
-if [ -d "$FNM_PATH" ]; then
-  export PATH="/home/eduardo-barreto/.local/share/fnm:$PATH"
-  eval "`fnm env --use-on-cd --version-file-strategy=recursive`"
-fi
+# kitty ssh fix
+[[ "$TERM" == "xterm-kitty" ]] && alias ssh="TERM=xterm-256color ssh"
 
 # bun completions
 [ -s "/home/eduardo-barreto/.bun/_bun" ] && source "/home/eduardo-barreto/.bun/_bun"
@@ -505,3 +462,13 @@ fi
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Autosource
+
+#source /opt/ros/jazzy/setup.zsh
+source /home/selene/anaconda3/bin/activate
+
+# Anaconda ZSH fix
+if [ -f "$CONDA_PREFIX/bin/clear" ]; then
+    mv "$CONDA_PREFIX/bin/clear" "$CONDA_PREFIX/bin/clear_old"
+fi
